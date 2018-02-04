@@ -5,11 +5,11 @@ var permalinks  = require('metalsmith-permalinks');
 
 Metalsmith(__dirname)
   .metadata({
-    title: "A Docker Tutorial for Beginners",
-    description: "Learn to build and deploy your distributed applications easily to the cloud with Docker",
+    title: "Docker 101 for Developers",
+    description: "Learn basics of everything You could need with a Docker as a Developer",
     author: "Prakhar Srivastav",
-    url: "https://docker-curriculum.com/",
-    logo: "https://docker-curriculum.com/images/logo-small.png",
+    url: "https://adiq.github.io/docker-101/",
+    logo: "https://adiq.github.io/docker-101/images/logo-small.png",
   })
   .source('./src')
   .destination('./public')

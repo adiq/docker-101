@@ -1,6 +1,6 @@
 {
-    "name": "Docker Curriculum",
-    "short_name": "Docker Curriculum",
+    "name": "Docker 101",
+    "short_name": "Docker 101",
     "start_url": "/",
     "scope": "/",
     "display": "standalone",

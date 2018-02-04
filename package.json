@@ -1,24 +1,19 @@
 {
-  "name": "docker-curriculum",
+  "name": "docker-101",
   "version": "0.0.1",
   "description": "<a id=\"top\"></a> # Docker for Beginners",
   "main": "index.js",
   "scripts": {
-    "generate": "node tutorial/index.js",
-    "serve": "firebase serve",
-    "deploy": "npm run generate && firebase deploy --project docker-curriculum",
+    "build": "node tutorial/index.js",
     "watch": "nodemon tutorial/index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/prakhar1989/docker-curriculum.git"
-  },
+  "repository": "github:adiq/docker-101",
   "author": "Prakhar Srivastav <prakhar1989@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/prakhar1989/docker-curriculum/issues"
+    "url": "https://github.com/adiq/docker-101/issues"
   },
-  "homepage": "https://github.com/prakhar1989/docker-curriculum#readme",
+  "homepage": "https://github.com/adiq/docker-101#readme",
   "dependencies": {
     "handlebars": "^4.0.5",
     "metalsmith": "^2.1.0",
