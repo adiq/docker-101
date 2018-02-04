@@ -3,11 +3,11 @@ layout: layout.html
 ---
 
 <a id="top"></a>
-<img src="/images/logo.png" alt="docker logo">
+<img src="images/logo.png" alt="docker logo">
 
-*Learn to build and deploy your distributed applications easily to the cloud with Docker*
+*Learn basics of everything You could need with a Docker as a Developer*
 
-Written and developed by [Prakhar Srivastav](http://prakhar.me).
+Originally, this tutorial was `Docker Curriculum` written and developed by [Prakhar Srivastav](http://prakhar.me).
 
 <a href="#top" class="top" id="getting-started">Top</a>
 
@@ -34,7 +34,7 @@ Containers take a different approach: by leveraging the low-level mechanics of t
 Docker's rise has been nothing short of meteoric. Although containers by themselves are not a new technology, it was not until Docker arrived that they started to get mainstream attention. By providing standard APIs that made containers easy to use and creating a way for the community to collaborate around libraries of containers, Docker has radically changed the face of the technology landscape. In an article published by [The Register](http://www.theregister.co.uk/2014/05/23/google_containerization_two_billion/) in mid-2014, it was claimed that Google runs over **two billion containers per week**.
 
 **Google Trends for 'Docker'**
-<img src="/images/interest.png" title="interest">
+<img src="images/interest.png" title="interest">
 
 In addition to Docker's continual growth, Docker, Inc., the developer behind Docker has been valued at over a billion dollars! Due to its benefits of efficiency and portability, Docker has been gaining mind share rapidly, and is now leading the **Containerization** movement. As developers going out into the world, it is important that we understand this trend and see how we can benefit from it.
 
@@ -74,7 +74,7 @@ This document contains a series of several sections, each of which explains a pa
 <a href="#table-of-contents" class="top" id="preface">Top</a>
 ## Preface
 
-> Note: This tutorial uses version **1.12.0-rc2** of Docker. If you find any part of the tutorial incompatible with a future version, please raise an [issue](https://github.com/prakhar1989/docker-curriculum/issues). Thanks!
+> Note: This tutorial uses version **1.12.0-rc2** of Docker. If you find any part of the tutorial incompatible with a future version, please raise an [issue](https://github.com/adiq/docker-101/issues). Thanks!
 
 <a id="prerequisites"></a>
 ### Prerequisites
@@ -229,7 +229,7 @@ You can also specify a custom port to which the client will forward connections 
 $ docker run -p 8888:80 prakhar1989/static-site
 Nginx is running...
 ```
-<img src="/images/static.png" title="static">
+<img src="images/static.png" title="static">
 
 To stop a detached container, run `docker stop` by giving the container ID. 
 
@@ -279,10 +279,10 @@ Then there are official and user images, which can be both base and child images
 <a id="our-image"></a>
 ### 2.3 Our First Image
 
-Now that we have a better understanding of images, it's time to create our own. Our goal in this section will be to create an image that sandboxes a simple [Flask](http://flask.pocoo.org) application. For the purposes of this workshop, I've already created a fun little [Flask app](https://github.com/prakhar1989/docker-curriculum/tree/master/flask-app) that displays a random cat `.gif` every time it is loaded - because you know, who doesn't like cats? If you haven't already, please go ahead and clone the repository locally like so - 
+Now that we have a better understanding of images, it's time to create our own. Our goal in this section will be to create an image that sandboxes a simple [Flask](http://flask.pocoo.org) application. For the purposes of this workshop, I've already created a fun little [Flask app](https://github.com/adiq/docker-101/tree/master/flask-app) that displays a random cat `.gif` every time it is loaded - because you know, who doesn't like cats? If you haven't already, please go ahead and clone the repository locally like so - 
 
 ```
-$ git clone https://github.com/prakhar1989/docker-curriculum
+$ git clone https://github.com/adiq/docker-101
 $ cd docker-curriculum/flask-app
 ```
 
@@ -364,7 +364,7 @@ $ docker run -p 8888:5000 prakhar1989/catnip
 ```
 The command we just ran used port 5000 for the server inside the container, and exposed this externally on port 8888. Head over to the URL with port 8888, where your app should be live.
 
-<img src="/images/catgif.png" title="static">
+<img src="images/catgif.png" title="static">
 
 Congratulations! You have successfully created your first docker image.
 
@@ -419,7 +419,7 @@ Here are the steps:
 
 <img src="images/eb-docker.png" title="static">
 
-- This is where we need to tell EB about our image. Open the `Dockerrun.aws.json` [file](https://github.com/prakhar1989/docker-curriculum/blob/master/flask-app/Dockerrun.aws.json) located in the `flask-app` folder and edit the `Name` of the image to your image's name. Don't worry, I'll explain the contents of the file shortly. When you are done, click on the radio button for "upload your own" and choose this file.
+- This is where we need to tell EB about our image. Open the `Dockerrun.aws.json` [file](https://github.com/adiq/docker-101/blob/master/flask-app/Dockerrun.aws.json) located in the `flask-app` folder and edit the `Name` of the image to your image's name. Don't worry, I'll explain the contents of the file shortly. When you are done, click on the radio button for "upload your own" and choose this file.
 - Next up, choose an environment name and a URL. This URL is what you'll share with your friends so make sure it's easy to remember.
 - For now, we won't be making changes in the *Additional Resources* section. Click Next and move to *Configuration Details*.
 - In this section, all you need to do is to check that the instance type is `t1.micro`. This is very important as this is the **free** instance by AWS. You can optionally choose a key-pair to login. If you don't know what that means, feel free to ignore this for now. We'll leave everything else to the default and forge ahead.
@@ -471,7 +471,7 @@ Just like it's a good strategy to decouple your application tiers, it is wise to
 
 The app that we're going to Dockerize is called SF Food Trucks. My goal in building this app was to have something that is useful (in that it resembles a real-world application), relies on at least one service, but is not too complex for the purpose of this tutorial. This is what I came up with.
 
-<img src="/images/foodtrucks.png" alt="sf food trucks">
+<img src="images/foodtrucks.png" alt="sf food trucks">
 
 The app's backend is written in Python (Flask) and for search it uses [Elasticsearch](https://www.elastic.co/products/elasticsearch). Like everything else in this tutorial, the entire source is available on [Github](http://github.com/prakhar1989/FoodTrucks). We'll use this as our candidate application for learning out how to build, run and deploy a multi-container environment.
 
@@ -1117,7 +1117,7 @@ Off you go, young padawan!
 ### 4.2 Give Feedback
 Now that the tutorial is over, it's my turn to ask questions. How did you like the tutorial? Did you find the tutorial to be a complete mess or did you have fun and learn something?
 
-Send in your thoughts directly to [me](mailto:prakhar@prakhar.me) or just [create an issue](https://github.com/prakhar1989/docker-curriculum/issues/new). I'm on [Twitter](https://twitter.com/prakharsriv9), too, so if that's your deal, feel free to holler there!
+[Create an issue](https://github.com/adiq/docker-101/issues/new) if You have any improvements or problems. I'm also on [Twitter](https://twitter.com/adiqpl), too, so if that's your deal, feel free to holler there!
 
 I would totally love to hear about your experience with this tutorial. Give suggestions on how to make this better or let me know about my mistakes. I want this tutorial to be one of the best introductory tutorials on the web and I can't do it without your help.
 
