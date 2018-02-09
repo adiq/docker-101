@@ -284,7 +284,7 @@ Now that we have a better understanding of images, it's time to create our own. 
 
 ```
 $ git clone https://github.com/adiq/docker-101
-$ cd docker-curriculum/flask-app
+$ cd docker-101/flask-app
 ```
 
 > This should be cloned on the machine where you are running the docker commands and *not* inside a docker container.
@@ -308,16 +308,20 @@ We start with specifying our base image. Use the `FROM` keyword to do that -
 ```
 FROM python:3-onbuild
 ```
-The next step usually is to write the commands of copying the files and installing the dependencies. Luckily for us, the `onbuild` version of the image takes care of that. The next thing we need to the specify is the port number that needs to be exposed. Since our flask app is running on port `5000`, that's what we'll indicate.
+The next step usually is to write the commands of copying the files and installing the dependencies. Luckily for us, the `onbuild` version of the image takes care of that. 
+The next thing we need to the specify is the port number that needs to be exposed. Since our flask app is running on port `5000`, that's what we'll indicate.
 ```
 EXPOSE 5000
 ```
+
+> Note: Keep in mind that EXPOSE in Dockerfile does not actually publish the port. It functions as a type of documentation between the person who builds the image and the person who runs the container, about which ports are intended to be published. To actually publish the port when running the container, use the -p flag on docker run to publish and map one or more ports (which we will do in next step), or the -P flag to publish all exposed ports and map them to high-order ports.
+
 The last step is to write the command for running the application, which is simply - `python ./app.py`. We use the [CMD](https://docs.docker.com/engine/reference/builder/#cmd) command to do that -
 ```
 CMD ["python", "./app.py"]
 ```
 
-The primary purpose of `CMD` is to tell the container which command it should run when it is started. With that, our `Dockerfile` is now ready. This is how it looks like -
+The primary purpose of `CMD` is to tell the container which command it should run when it is started. With that, our `Dockerfile` is now ready. This is how it looks like
 ```
 # our base image
 FROM python:3-onbuild
@@ -328,6 +332,14 @@ EXPOSE 5000
 # run the application
 CMD ["python", "./app.py"]
 ```
+
+Please do not confuse `CMD` with `ENTRYPOINT` instruction. Both of those define what command gets executed when running a container. But there are few rules that describe their co-operation:
+                                            
+- Dockerfile should specify at least one of CMD or ENTRYPOINT commands.
+- ENTRYPOINT should be defined when using the container as an executable.
+- CMD should be used as a way of defining default arguments for an ENTRYPOINT command or for executing an ad-hoc command in a container.
+- CMD will be overridden when running the container with alternative arguments.                                            
+                         
 
 Now that we have our `Dockerfile`, we can build our image. The `docker build` command does the heavy-lifting of creating a Docker image from a `Dockerfile`.
 
