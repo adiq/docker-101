@@ -849,9 +849,6 @@ fe00::0    ip6-localnet
 ff00::0    ip6-mcastprefix
 ff02::1    ip6-allnodes
 ff02::2    ip6-allrouters
-172.18.0.2    es
-172.18.0.2    es.foodtrucks
-
 root@53af252b771a:/opt/flask-app# curl es:9200
 bash: curl: command not found
 root@53af252b771a:/opt/flask-app# apt-get -yqq install curl
@@ -877,7 +874,16 @@ Total trucks loaded:  733
  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
 root@53af252b771a:/opt/flask-app# exit
 </code></pre>
-<p>Wohoo! That works! Magically Docker made the correct host file entry in <code>/etc/hosts</code> which means that <code>es:9200</code> correctly resolves to the IP address of the ES container. Great! Let&#39;s launch our Flask container for real now -</p>
+<p>Wohoo! That works, but how?! Docker did not added our <code>es</code> server to host file <code>/etc/hosts</code>.</p>
+<p>Actually, in older versions of docker this entry would be indeed added to the hosts file, but in newer versions, it was replaced by resolving those servers addresses by DNS service.</p>
+<p>Let&#39;s inspect it by ourself if we can resolve our container name to a real IP address.</p>
+<pre><code class="lang-javascript">$ docker run -it --rm --net foodtrucks prakhar1989/foodtrucks-web bash
+root@53af252b771a:/opt/flask-app# apt-get -yqq install host
+root@53af252b771a:/opt/flask-app# host -t a es
+es has address 172.18.0.3
+root@53af252b771a:/opt/flask-app# exit
+</code></pre>
+<p>It works! So that docker magic is demystified! Let&#39;s launch our Flask container for real now -</p>
 <pre><code class="lang-javascript">$ docker run -d --net foodtrucks -p 5000:5000 --name foodtrucks-web prakhar1989/foodtrucks-web
 2a1b77e066e646686f669bab4759ec1611db359362a031667cacbe45c3ddb413
 
