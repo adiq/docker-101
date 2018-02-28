@@ -684,9 +684,6 @@ fe00::0	ip6-localnet
 ff00::0	ip6-mcastprefix
 ff02::1	ip6-allnodes
 ff02::2	ip6-allrouters
-172.18.0.2	es
-172.18.0.2	es.foodtrucks
-
 root@53af252b771a:/opt/flask-app# curl es:9200
 bash: curl: command not found
 root@53af252b771a:/opt/flask-app# apt-get -yqq install curl
@@ -713,7 +710,24 @@ Total trucks loaded:  733
 root@53af252b771a:/opt/flask-app# exit
 ```
 
-Wohoo! That works! Magically Docker made the correct host file entry in `/etc/hosts` which means that `es:9200` correctly resolves to the IP address of the ES container. Great! Let's launch our Flask container for real now -
+Wohoo! That works, but how?! Docker did not added our `es` server to host file `/etc/hosts`.
+
+Actually, in older versions of docker this entry would be indeed added to the hosts file, but in newer versions, it was replaced by resolving those servers addresses by DNS service.
+
+
+Let's inspect it by ourself if we can resolve our container name to a real IP address.
+
+```javascript
+$ docker run -it --rm --net foodtrucks prakhar1989/foodtrucks-web bash
+root@53af252b771a:/opt/flask-app# apt-get -yqq install host
+root@53af252b771a:/opt/flask-app# host -t a es
+es has address 172.18.0.3
+root@53af252b771a:/opt/flask-app# exit
+```
+
+
+It works! So that docker magic is demystified! Let's launch our Flask container for real now -
+
 ```javascript
 $ docker run -d --net foodtrucks -p 5000:5000 --name foodtrucks-web prakhar1989/foodtrucks-web
 2a1b77e066e646686f669bab4759ec1611db359362a031667cacbe45c3ddb413
