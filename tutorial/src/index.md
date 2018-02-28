@@ -712,7 +712,7 @@ root@53af252b771a:/opt/flask-app# exit
 
 Wohoo! That works, but how?! Docker did not added our `es` server to host file `/etc/hosts`.
 
-Actually, in older versions of docker this entry would be indeed added to the hosts file, but in newer versions, it was replaced by resolving those servers addresses by DNS service.
+Actually, in older versions of docker this entry would be indeed added to the hosts file, but in It turns out that in Docker 1.10 a new networking system was added that does service discovery using a DNS server. If you're interested, you can read more about the [proposal](https://github.com/docker/libnetwork/issues/767) and [release notes](https://blog.docker.com/2016/02/docker-1-10/).
 
 
 Let's inspect it by ourself if we can resolve our container name to a real IP address.
@@ -933,39 +933,7 @@ NETWORK ID          NAME                 DRIVER
 b44db703cd69        host                 host                
 0474c9517805        none                 null  
 ```
-You can see that compose went ahead and created a new network called `foodtrucks_default` and attached both the new services in that network so that each of these are discoverable to the other. Each container for a service joins the default network and is both reachable by other containers on that network, and discoverable by them at a hostname identical to the container name. Let's see if that information resides in `/etc/hosts`.
-
-```
-$ docker ps
-CONTAINER ID        IMAGE                        COMMAND                  CREATED             STATUS              PORTS                    NAMES
-bb72dcebd379        prakhar1989/foodtrucks-web   "python app.py"          20 hours ago        Up 19 hours         0.0.0.0:5000->5000/tcp   foodtrucks_web_1
-3338fc79be4b        elasticsearch                "/docker-entrypoint.s"   20 hours ago        Up 19 hours         9200/tcp, 9300/tcp       foodtrucks_es_1
-
-$ docker exec -it bb72dcebd379 bash
-root@bb72dcebd379:/opt/flask-app# cat /etc/hosts
-127.0.0.1	localhost
-::1	localhost ip6-localhost ip6-loopback
-fe00::0	ip6-localnet
-ff00::0	ip6-mcastprefix
-ff02::1	ip6-allnodes
-ff02::2	ip6-allrouters
-172.18.0.2	bb72dcebd379
-```
-
-Whoops! It turns out that this file has no idea what the `es` network. So how is our app working? Let's see if can ping this hostname -
-
-```
-root@bb72dcebd379:/opt/flask-app# ping es
-PING es (172.18.0.3) 56(84) bytes of data.
-64 bytes from foodtrucks_es_1.foodtrucks_default (172.18.0.3): icmp_seq=1 ttl=64 time=0.049 ms
-64 bytes from foodtrucks_es_1.foodtrucks_default (172.18.0.3): icmp_seq=2 ttl=64 time=0.064 ms
-^C
---- es ping statistics ---
-2 packets transmitted, 2 received, 0% packet loss, time 999ms
-rtt min/avg/max/mdev = 0.049/0.056/0.064/0.010 ms
-```
-
-Voila! That works. So somehow, this container is magically able to ping `es` hostname.  It turns out that in Docker 1.10 a new networking system was added that does service discovery using a DNS server. If you're interested, you can read more about the [proposal](https://github.com/docker/libnetwork/issues/767) and [release notes](https://blog.docker.com/2016/02/docker-1-10/).
+You can see that compose went ahead and created a new network called `foodtrucks_default` and attached both the new services in that network so that each of these are discoverable to the other. Each container for a service joins the default network and is both reachable by other containers on that network, and discoverable by them at a hostname identical to the container name.
 
 
 > Notice: docker compose supports loading services configuration over multiple files. You could see such configurations for various cases eg. separating ports exposure.
