@@ -49,10 +49,10 @@ This document contains a series of several sections, each of which explains a pa
 
 -	[Preface](#preface)
     -	[Prerequisites](#prerequisites)
-    - [Setting up your computer](#setup)
+    -	[Terminology](#terminology)
+    -   [Setting up your computer](#setup)
 - [1.0 Playing with Busybox](#busybox)
     -	[1.1 Docker Run](#dockerrun)
-    -	[1.2 Terminology](#terminology)
 - [2.0 Webapps with Docker](#webapps)
     -	[2.1 Static Sites](#static-site)
     -	[2.2 Docker Images](#docker-images)
@@ -98,6 +98,19 @@ Hello from Docker.
 This message shows that your installation appears to be working correctly.
 ...
 ```
+
+<a id="terminology"></a>
+### 1.2 Terminology
+In the last section, we used a lot of Docker-specific jargon which might be confusing to some. So before we go further, let me clarify some terminology that is used frequently in the Docker ecosystem.
+
+<img src="images/docker-architecture.png" title="docker architecture">
+
+- *Images* - The blueprints of our application which form the basis of containers.
+- *Containers* - Created from Docker images and run the actual application. We create a container using `docker run` which we did using the busybox image that we downloaded. A list of running containers can be seen using the `docker ps` command.
+- *Docker Daemon* - The background service running on the host that manages building, running and distributing Docker containers. The daemon is the process that runs in the operating system to which clients talk to.
+- *Docker Client* - The command line tool that allows the user to interact with the daemon. More generally, there can be other forms of clients too - such as [Kitematic](https://kitematic.com/) which provide a GUI to the users.
+- *Docker Hub* - A [registry](https://hub.docker.com/explore/) of Docker images. You can think of the registry as a directory of all available Docker images. If required, one can host their own Docker registries and can use them for pulling images.
+
 ___________
 
 <a href="#table-of-contents" class="top" id="preface">Top</a>
@@ -178,16 +191,6 @@ $ docker rm $(docker ps -a -q -f status=exited)
 This command deletes all containers that have a status of `exited`. In case you're wondering, the `-q` flag, only returns the numeric IDs and `-f` filters output based on conditions provided. One last thing that'll be useful is the `--rm` flag that can be passed to `docker run` which automatically deletes the container once it's exited from. For one off docker runs, `--rm` flag is very useful.
 
 Lastly, you can also delete images that you no longer need by running `docker rmi`.
-
-<a id="terminology"></a>
-### 1.2 Terminology
-In the last section, we used a lot of Docker-specific jargon which might be confusing to some. So before we go further, let me clarify some terminology that is used frequently in the Docker ecosystem.
-
-- *Images* - The blueprints of our application which form the basis of containers. In the demo above, we used the `docker pull` command to download the **busybox** image.
-- *Containers* - Created from Docker images and run the actual application. We create a container using `docker run` which we did using the busybox image that we downloaded. A list of running containers can be seen using the `docker ps` command.
-- *Docker Daemon* - The background service running on the host that manages building, running and distributing Docker containers. The daemon is the process that runs in the operating system to which clients talk to.
-- *Docker Client* - The command line tool that allows the user to interact with the daemon. More generally, there can be other forms of clients too - such as [Kitematic](https://kitematic.com/) which provide a GUI to the users.
-- *Docker Hub* - A [registry](https://hub.docker.com/explore/) of Docker images. You can think of the registry as a directory of all available Docker images. If required, one can host their own Docker registries and can use them for pulling images.
 
 <a href="#table-of-contents" class="top" id="preface">Top</a>
 <a id="webapps"></a>
@@ -289,13 +292,7 @@ $ cd docker-101/flask-app
 
 > This should be cloned on the machine where you are running the docker commands and *not* inside a docker container.
 
-The next step now is to create an image with this web app. As mentioned above, all user images are based off of a base image. Since our application is written in Python, the base image we're going to use will be [Python 3](https://hub.docker.com/_/python/). More specifically, we are going to use the `python:3-onbuild` version of the python image.
-
-What's the `onbuild` version you might ask?
-
-> These images include multiple ONBUILD triggers, which should be all you need to bootstrap most applications. The build will COPY a `requirements.txt` file, RUN `pip install` on said file, and then copy the current directory into `/usr/src/app`.
-
-In other words, the `onbuild` version of the image includes helpers that automate the boring parts of getting an app running. Rather than doing these tasks manually (or scripting these tasks), these images do that work for you. We now have all the ingredients to create our own image - a functioning web app and a base image. How are we going to do that? The answer is - using a **Dockerfile**.
+The next step now is to create an image with this web app. As mentioned above, all user images are based off of a base image. Since our application is written in Python, the base image we're going to use will be [Python 3](https://hub.docker.com/_/python/). More specifically, we are going to use the `python:3` version of the python image.
 
 <a id="dockerfiles"></a>
 ### 2.4 Dockerfile
@@ -306,7 +303,7 @@ The application directory does contain a Dockerfile but since we're doing this f
 
 We start with specifying our base image. Use the `FROM` keyword to do that -
 ```
-FROM python:3-onbuild
+FROM python:3
 ```
 The next step usually is to write the commands of copying the files and installing the dependencies. Luckily for us, the `onbuild` version of the image takes care of that. 
 The next thing we need to the specify is the port number that needs to be exposed. Since our flask app is running on port `5000`, that's what we'll indicate.
@@ -323,14 +320,19 @@ CMD ["python", "./app.py"]
 
 The primary purpose of `CMD` is to tell the container which command it should run when it is started. With that, our `Dockerfile` is now ready. This is how it looks like
 ```
-# our base image
-FROM python:3-onbuild
+FROM python:3 # Base image
 
-# specify the port number the container should expose
-EXPOSE 5000
+RUN mkdir -p /usr/src/app # Create a working directory
+WORKDIR /usr/src/app # Set a working directory
 
-# run the application
-CMD ["python", "./app.py"]
+COPY requirements.txt /usr/src/app/ # Copy local requirements.txt file to /usr/src/app/ on container
+RUN pip install --no-cache-dir -r requirements.txt # Execute pip command
+
+COPY . /usr/src/app # Copy application filer from current directory to /usr/src/app
+
+EXPOSE 5000 # Inform user about application working on port 5000 internally
+
+CMD ["python", "./app.py"] # Set default CMD to execute python ./app.py
 ```
 
 Please do not confuse `CMD` with `ENTRYPOINT` instruction. Both of those define what command gets executed when running a container. But there are few rules that describe their co-operation:
@@ -348,7 +350,7 @@ The section below shows you the output of running the same. Before you run the c
 ```
 $ docker build -t prakhar1989/catnip .
 Sending build context to Docker daemon 8.704 kB
-Step 1 : FROM python:3-onbuild
+Step 1 : FROM python:3
 # Executing 3 build triggers...
 Step 1 : COPY requirements.txt /usr/src/app/
  ---> Using cache
@@ -368,7 +370,7 @@ Removing intermediate container f01401a5ace9
 Successfully built 13e87ed1fbc2
 ```
 
-If you don't have the `python:3-onbuild` image, the client will first pull the image and then create your image. Hence, your output from running the command will look different from mine. Look carefully and you'll notice that the on-build triggers were executed correctly. If everything went well, your image should be ready! Run `docker images` and see if your image shows.
+If you don't have the `python:3` image, the client will first pull the image and then create your image. Hence, your output from running the command will look different from mine. Look carefully and you'll notice that the on-build triggers were executed correctly. If everything went well, your image should be ready! Run `docker images` and see if your image shows.
 
 > Remember: Always use specific image version. Do not leave your images depending on `latest` version as it may cause unexpected problems in future (compatibility breakes).
 

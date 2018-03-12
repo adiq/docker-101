@@ -1,8 +1,13 @@
-# Instructions copied from - https://hub.docker.com/_/python/
-FROM python:3-onbuild
+FROM python:3
 
-# tell the port number the container should expose
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+COPY requirements.txt /usr/src/app/
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . /usr/src/app
+
 EXPOSE 5000
 
-# run the command
 CMD ["python", "./app.py"]
