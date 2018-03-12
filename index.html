@@ -360,12 +360,12 @@
 <ul>
 <li><a href="#preface">Preface</a><ul>
 <li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#terminology">Terminology</a></li>
 <li><a href="#setup">Setting up your computer</a></li>
 </ul>
 </li>
 <li><a href="#busybox">1.0 Playing with Busybox</a><ul>
 <li><a href="#dockerrun">1.1 Docker Run</a></li>
-<li><a href="#terminology">1.2 Terminology</a></li>
 </ul>
 </li>
 <li><a href="#webapps">2.0 Webapps with Docker</a><ul>
@@ -416,7 +416,18 @@
 Hello from Docker.
 This message shows that your installation appears to be working correctly.
 ...
-</code></pre><hr>
+</code></pre><p><a id="terminology"></a></p>
+<h3 id="1-2-terminology">1.2 Terminology</h3>
+<p>In the last section, we used a lot of Docker-specific jargon which might be confusing to some. So before we go further, let me clarify some terminology that is used frequently in the Docker ecosystem.</p>
+<p><img src="images/docker-architecture.png" title="docker architecture"></p>
+<ul>
+<li><em>Images</em> - The blueprints of our application which form the basis of containers.</li>
+<li><em>Containers</em> - Created from Docker images and run the actual application. We create a container using <code>docker run</code> which we did using the busybox image that we downloaded. A list of running containers can be seen using the <code>docker ps</code> command.</li>
+<li><em>Docker Daemon</em> - The background service running on the host that manages building, running and distributing Docker containers. The daemon is the process that runs in the operating system to which clients talk to.</li>
+<li><em>Docker Client</em> - The command line tool that allows the user to interact with the daemon. More generally, there can be other forms of clients too - such as <a href="https://kitematic.com/">Kitematic</a> which provide a GUI to the users.</li>
+<li><em>Docker Hub</em> - A <a href="https://hub.docker.com/explore/">registry</a> of Docker images. You can think of the registry as a directory of all available Docker images. If required, one can host their own Docker registries and can use them for pulling images.</li>
+</ul>
+<hr>
 <p><a href="#table-of-contents" class="top" id="preface">Top</a>
 <a id="busybox"></a></p>
 <h2 id="1-0-playing-with-busybox">1.0 Playing with Busybox</h2>
@@ -466,16 +477,6 @@ ff0a5c3750b9
 <pre><code>$ docker rm $(docker ps -a -q -f status=exited)
 </code></pre><p>This command deletes all containers that have a status of <code>exited</code>. In case you&#39;re wondering, the <code>-q</code> flag, only returns the numeric IDs and <code>-f</code> filters output based on conditions provided. One last thing that&#39;ll be useful is the <code>--rm</code> flag that can be passed to <code>docker run</code> which automatically deletes the container once it&#39;s exited from. For one off docker runs, <code>--rm</code> flag is very useful.</p>
 <p>Lastly, you can also delete images that you no longer need by running <code>docker rmi</code>.</p>
-<p><a id="terminology"></a></p>
-<h3 id="1-2-terminology">1.2 Terminology</h3>
-<p>In the last section, we used a lot of Docker-specific jargon which might be confusing to some. So before we go further, let me clarify some terminology that is used frequently in the Docker ecosystem.</p>
-<ul>
-<li><em>Images</em> - The blueprints of our application which form the basis of containers. In the demo above, we used the <code>docker pull</code> command to download the <strong>busybox</strong> image.</li>
-<li><em>Containers</em> - Created from Docker images and run the actual application. We create a container using <code>docker run</code> which we did using the busybox image that we downloaded. A list of running containers can be seen using the <code>docker ps</code> command.</li>
-<li><em>Docker Daemon</em> - The background service running on the host that manages building, running and distributing Docker containers. The daemon is the process that runs in the operating system to which clients talk to.</li>
-<li><em>Docker Client</em> - The command line tool that allows the user to interact with the daemon. More generally, there can be other forms of clients too - such as <a href="https://kitematic.com/">Kitematic</a> which provide a GUI to the users.</li>
-<li><em>Docker Hub</em> - A <a href="https://hub.docker.com/explore/">registry</a> of Docker images. You can think of the registry as a directory of all available Docker images. If required, one can host their own Docker registries and can use them for pulling images.</li>
-</ul>
 <p><a href="#table-of-contents" class="top" id="preface">Top</a>
 <a id="webapps"></a></p>
 <h2 id="2-0-webapps-with-docker">2.0 Webapps with Docker</h2>
@@ -542,18 +543,13 @@ $ cd docker-101/flask-app
 </code></pre><blockquote>
 <p>This should be cloned on the machine where you are running the docker commands and <em>not</em> inside a docker container.</p>
 </blockquote>
-<p>The next step now is to create an image with this web app. As mentioned above, all user images are based off of a base image. Since our application is written in Python, the base image we&#39;re going to use will be <a href="https://hub.docker.com/_/python/">Python 3</a>. More specifically, we are going to use the <code>python:3-onbuild</code> version of the python image.</p>
-<p>What&#39;s the <code>onbuild</code> version you might ask?</p>
-<blockquote>
-<p>These images include multiple ONBUILD triggers, which should be all you need to bootstrap most applications. The build will COPY a <code>requirements.txt</code> file, RUN <code>pip install</code> on said file, and then copy the current directory into <code>/usr/src/app</code>.</p>
-</blockquote>
-<p>In other words, the <code>onbuild</code> version of the image includes helpers that automate the boring parts of getting an app running. Rather than doing these tasks manually (or scripting these tasks), these images do that work for you. We now have all the ingredients to create our own image - a functioning web app and a base image. How are we going to do that? The answer is - using a <strong>Dockerfile</strong>.</p>
+<p>The next step now is to create an image with this web app. As mentioned above, all user images are based off of a base image. Since our application is written in Python, the base image we&#39;re going to use will be <a href="https://hub.docker.com/_/python/">Python 3</a>. More specifically, we are going to use the <code>python:3</code> version of the python image.</p>
 <p><a id="dockerfiles"></a></p>
 <h3 id="2-4-dockerfile">2.4 Dockerfile</h3>
 <p>A <a href="https://docs.docker.com/engine/reference/builder/">Dockerfile</a> is a simple text-file that contains a list of commands that the Docker client calls while creating an image. It&#39;s a simple way to automate the image creation process. The best part is that the <a href="https://docs.docker.com/engine/reference/builder/#from">commands</a> you write in a Dockerfile are <em>almost</em> identical to their equivalent Linux commands. This means you don&#39;t really have to learn new syntax to create your own dockerfiles.</p>
 <p>The application directory does contain a Dockerfile but since we&#39;re doing this for the first time, we&#39;ll create one from scratch. To start, create a new blank file in our favorite text-editor and save it in the <strong>same</strong> folder as the flask app by the name of <code>Dockerfile</code>.</p>
 <p>We start with specifying our base image. Use the <code>FROM</code> keyword to do that -</p>
-<pre><code>FROM python:3-onbuild
+<pre><code>FROM python:3
 </code></pre><p>The next step usually is to write the commands of copying the files and installing the dependencies. Luckily for us, the <code>onbuild</code> version of the image takes care of that. 
 The next thing we need to the specify is the port number that needs to be exposed. Since our flask app is running on port <code>5000</code>, that&#39;s what we&#39;ll indicate.</p>
 <pre><code>EXPOSE 5000
@@ -563,14 +559,19 @@ The next thing we need to the specify is the port number that needs to be expose
 <p>The last step is to write the command for running the application, which is simply - <code>python ./app.py</code>. We use the <a href="https://docs.docker.com/engine/reference/builder/#cmd">CMD</a> command to do that -</p>
 <pre><code>CMD [&quot;python&quot;, &quot;./app.py&quot;]
 </code></pre><p>The primary purpose of <code>CMD</code> is to tell the container which command it should run when it is started. With that, our <code>Dockerfile</code> is now ready. This is how it looks like</p>
-<pre><code># our base image
-FROM python:3-onbuild
+<pre><code>FROM python:3 # Base image
 
-# specify the port number the container should expose
-EXPOSE 5000
+RUN mkdir -p /usr/src/app # Create a working directory
+WORKDIR /usr/src/app # Set a working directory
 
-# run the application
-CMD [&quot;python&quot;, &quot;./app.py&quot;]
+COPY requirements.txt /usr/src/app/ # Copy local requirements.txt file to /usr/src/app/ on container
+RUN pip install --no-cache-dir -r requirements.txt # Execute pip command
+
+COPY . /usr/src/app # Copy application filer from current directory to /usr/src/app
+
+EXPOSE 5000 # Inform user about application working on port 5000 internally
+
+CMD [&quot;python&quot;, &quot;./app.py&quot;] # Set default CMD to execute python ./app.py
 </code></pre><p>Please do not confuse <code>CMD</code> with <code>ENTRYPOINT</code> instruction. Both of those define what command gets executed when running a container. But there are few rules that describe their co-operation:</p>
 <ul>
 <li>Dockerfile should specify at least one of CMD or ENTRYPOINT commands.</li>
@@ -582,7 +583,7 @@ CMD [&quot;python&quot;, &quot;./app.py&quot;]
 <p>The section below shows you the output of running the same. Before you run the command yourself (don&#39;t forget the period), make sure to replace my username with yours. This username should be the same one you created when you registered on <a href="https://hub.docker.com">Docker hub</a>. If you haven&#39;t done that yet, please go ahead and create an account. The <code>docker build</code> command is quite simple - it takes an optional tag name with <code>-t</code> and a location of the directory containing the <code>Dockerfile</code>.</p>
 <pre><code>$ docker build -t prakhar1989/catnip .
 Sending build context to Docker daemon 8.704 kB
-Step 1 : FROM python:3-onbuild
+Step 1 : FROM python:3
 # Executing 3 build triggers...
 Step 1 : COPY requirements.txt /usr/src/app/
  ---&gt; Using cache
@@ -600,7 +601,7 @@ Step 3 : CMD python ./app.py
  ---&gt; 13e87ed1fbc2
 Removing intermediate container f01401a5ace9
 Successfully built 13e87ed1fbc2
-</code></pre><p>If you don&#39;t have the <code>python:3-onbuild</code> image, the client will first pull the image and then create your image. Hence, your output from running the command will look different from mine. Look carefully and you&#39;ll notice that the on-build triggers were executed correctly. If everything went well, your image should be ready! Run <code>docker images</code> and see if your image shows.</p>
+</code></pre><p>If you don&#39;t have the <code>python:3</code> image, the client will first pull the image and then create your image. Hence, your output from running the command will look different from mine. Look carefully and you&#39;ll notice that the on-build triggers were executed correctly. If everything went well, your image should be ready! Run <code>docker images</code> and see if your image shows.</p>
 <blockquote>
 <p>Remember: Always use specific image version. Do not leave your images depending on <code>latest</code> version as it may cause unexpected problems in future (compatibility breakes).</p>
 </blockquote>
