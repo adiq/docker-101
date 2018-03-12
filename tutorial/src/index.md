@@ -100,7 +100,7 @@ This message shows that your installation appears to be working correctly.
 ```
 
 <a id="terminology"></a>
-### 1.2 Terminology
+### Terminology
 In the last section, we used a lot of Docker-specific jargon which might be confusing to some. So before we go further, let me clarify some terminology that is used frequently in the Docker ecosystem.
 
 <img src="images/docker-architecture.png" title="docker architecture">
